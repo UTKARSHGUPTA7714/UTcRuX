@@ -22,6 +22,8 @@ import androidx.glance.appwidget.GlanceAppWidgetReceiver
 import androidx.glance.appwidget.SizeMode
 import androidx.glance.appwidget.action.ActionCallback
 import androidx.glance.appwidget.action.actionRunCallback
+import androidx.glance.appwidget.lazy.LazyColumn
+import androidx.glance.appwidget.lazy.itemsIndexed
 import androidx.glance.appwidget.provideContent
 import androidx.glance.background
 import androidx.glance.color.ColorProvider
@@ -117,7 +119,6 @@ class CruxWidget : GlanceAppWidget() {
             val prefs = currentState<Preferences>()
             val rawIndex = prefs[CURRENT_CARD_INDEX_KEY] ?: 0
             val safeIndex = ((rawIndex % displayItems.size) + displayItems.size) % displayItems.size
-            val currentItem = displayItems[safeIndex]
 
             val gameAnsweredState = prefs[GAME_ANSWERED_STATE_KEY] ?: "NONE"
             val gameSelectedOption = prefs[GAME_SELECTED_OPTION_KEY] ?: ""
@@ -125,9 +126,8 @@ class CruxWidget : GlanceAppWidget() {
 
             GlanceTheme {
                 CruxWidgetContent(
-                    content = currentItem,
-                    currentIndex = safeIndex + 1,
-                    totalCount = displayItems.size,
+                    displayItems = displayItems,
+                    currentIndex = safeIndex,
                     gameAnsweredState = gameAnsweredState,
                     gameSelectedOption = gameSelectedOption,
                     gameScore = gameScore
@@ -141,9 +141,8 @@ private fun color(hex: Long) = ColorProvider(day = Color(hex), night = Color(hex
 
 @Composable
 fun CruxWidgetContent(
-    content: CruxContent,
+    displayItems: List<CruxContent>,
     currentIndex: Int,
-    totalCount: Int,
     gameAnsweredState: String,
     gameSelectedOption: String,
     gameScore: Int
@@ -155,6 +154,8 @@ fun CruxWidgetContent(
     val containerPadding: Dp = if (isSmall) 10.dp else if (isLarge) 18.dp else 14.dp
     val titleFontSize: TextUnit = if (isSmall) 14.sp else if (isLarge) 22.sp else 18.sp
     val bodyFontSize: TextUnit = if (isSmall) 10.sp else if (isLarge) 14.sp else 12.sp
+
+    val currentContent = displayItems.getOrElse(currentIndex) { displayItems[0] }
 
     Box(
         modifier = GlanceModifier
@@ -183,35 +184,41 @@ fun CruxWidgetContent(
 
             Spacer(modifier = GlanceModifier.height(6.dp))
 
-            // Main Content Body / MCQ Interactive Game Layout
-            if (content.type.uppercase() == "GAME") {
-                RenderMcqGameContent(
-                    content = content,
-                    gameAnsweredState = gameAnsweredState,
-                    gameSelectedOption = gameSelectedOption,
-                    gameScore = gameScore,
-                    isSmall = isSmall,
-                    titleFontSize = titleFontSize,
-                    bodyFontSize = bodyFontSize
-                )
-            } else {
-                RenderStandardCruxContent(
-                    content = content,
-                    titleFontSize = titleFontSize,
-                    bodyFontSize = bodyFontSize,
-                    isSmall = isSmall
-                )
+            // Main Content Area wrapped in Glance LazyColumn for Native AppWidget Vertical Swiping
+            LazyColumn(
+                modifier = GlanceModifier.fillMaxWidth().defaultWeight()
+            ) {
+                item {
+                    if (currentContent.type.uppercase() == "GAME") {
+                        RenderMcqGameContent(
+                            content = currentContent,
+                            gameAnsweredState = gameAnsweredState,
+                            gameSelectedOption = gameSelectedOption,
+                            gameScore = gameScore,
+                            isSmall = isSmall,
+                            titleFontSize = titleFontSize,
+                            bodyFontSize = bodyFontSize
+                        )
+                    } else {
+                        RenderStandardCruxContent(
+                            content = currentContent,
+                            titleFontSize = titleFontSize,
+                            bodyFontSize = bodyFontSize,
+                            isSmall = isSmall
+                        )
+                    }
+                }
             }
 
-            Spacer(modifier = GlanceModifier.defaultWeight())
+            Spacer(modifier = GlanceModifier.height(6.dp))
 
-            // Footer: Timestamp & Expanded Touch Target Navigation Controls (44dp x 36dp)
+            // Footer: Timestamp & Touch Target Navigation Controls (44dp x 36dp)
             Row(
                 modifier = GlanceModifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = formatTimestamp(content.published_at),
+                    text = formatTimestamp(currentContent.published_at),
                     style = TextStyle(
                         color = color(0xFF777777L),
                         fontSize = 9.sp
@@ -238,7 +245,7 @@ fun CruxWidgetContent(
                         )
                     }
                     Text(
-                        text = String.format("%02d/%02d", currentIndex, totalCount),
+                        text = String.format("%02d/%02d", currentIndex + 1, displayItems.size),
                         style = TextStyle(
                             color = color(0xFF999999L),
                             fontSize = 9.sp,

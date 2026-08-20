@@ -87,7 +87,13 @@ async function createContent(req, res) {
         return res.status(400).json({ error: 'correct_answer must match one of the options' });
       }
     }
-    const saved = await repository.save(req.body);
+    const contentData = {
+      ...req.body,
+      id: req.body.id || `crux_${Date.now()}`,
+      published_at: req.body.published_at || new Date().toISOString(),
+      created_at: new Date().toISOString()
+    };
+    const saved = await repository.save(contentData);
 
     // Dispatch lightweight FCM push signal (Fail-safe: Database record remains published if FCM fails)
     try {

@@ -39,16 +39,16 @@ class LocalContentRepository extends ContentRepositoryInterface {
 
   // Server-side publishing rule evaluation engine
   _filterPublished(items) {
-    const now = new Date().toISOString();
+    const nowTime = Date.now() + 1000;
     return items.filter(item => {
       // 1. Must be PUBLISHED status set by server
       if (item.status !== 'PUBLISHED') return false;
       // 2. Must be PUBLIC visibility
       if (item.visibility && item.visibility !== 'PUBLIC') return false;
       // 3. Must not be expired
-      if (item.expires_at && item.expires_at < now) return false;
-      // 4. Must be at or after published_at date
-      if (item.published_at && item.published_at > now) return false;
+      if (item.expires_at && new Date(item.expires_at).getTime() < Date.now()) return false;
+      // 4. Must be at or before current time
+      if (item.published_at && new Date(item.published_at).getTime() > nowTime) return false;
       return true;
     });
   }
@@ -58,9 +58,6 @@ class LocalContentRepository extends ContentRepositoryInterface {
     const published = this._filterPublished(items);
 
     published.sort((a, b) => {
-      if (a.priority !== b.priority) {
-        return (a.priority || 99) - (b.priority || 99);
-      }
       return new Date(b.published_at) - new Date(a.published_at);
     });
 
