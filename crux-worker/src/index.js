@@ -50,6 +50,32 @@ function isAuthorizedAdmin(request, env) {
   return token.length >= 16 && token.startsWith('crux_sec_');
 }
 
+// Lightweight FCM Topic Broadcast Helper
+async function broadcastFcmUpdate(env, contentId) {
+  if (!env.FCM_SERVER_KEY) {
+    return;
+  }
+  try {
+    await fetch('https://fcm.googleapis.com/fcm/send', {
+      method: 'POST',
+      headers: {
+        'Authorization': `key=${env.FCM_SERVER_KEY}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        to: '/topics/crux_public',
+        priority: 'high',
+        data: {
+          type: 'CRUX_UPDATED',
+          contentId: contentId || ''
+        }
+      })
+    });
+  } catch (err) {
+    // Non-blocking error handling
+  }
+}
+
 export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
@@ -217,6 +243,13 @@ export default {
           body.difficulty || 'EASY',
           body.points || 10
         ).run();
+
+        // Broadcast lightweight FCM update signal to topic crux_public
+        if (ctx && ctx.waitUntil) {
+          ctx.waitUntil(broadcastFcmUpdate(env, id));
+        } else {
+          await broadcastFcmUpdate(env, id);
+        }
 
         return jsonResponse({
           message: 'Content published to Cloudflare D1 successfully',
