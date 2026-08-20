@@ -212,7 +212,7 @@ fun CruxWidgetContent(
 
             Spacer(modifier = GlanceModifier.height(6.dp))
 
-            // Footer: Timestamp & Touch Target Navigation Controls (44dp x 36dp)
+            // Footer: Timestamp, Jump-To-Game ▶ Icon & Navigation Controls
             Row(
                 modifier = GlanceModifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
@@ -228,6 +228,26 @@ fun CruxWidgetContent(
                 Row(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
+                    // Jump-to-Game ▶ Quick Access Icon Button
+                    Box(
+                        modifier = GlanceModifier
+                            .width(44.dp)
+                            .height(36.dp)
+                            .clickable(actionRunCallback<JumpToGameAction>()),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = "▶",
+                            style = TextStyle(
+                                color = color(0xFFFF9800L),
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                        )
+                    }
+
+                    Spacer(modifier = GlanceModifier.width(4.dp))
+
                     Box(
                         modifier = GlanceModifier
                             .width(44.dp)
@@ -510,6 +530,37 @@ class PrevCardAction : ActionCallback {
             prefs[GAME_ANSWERED_STATE_KEY] = "NONE" // Reset MCQ state on card change
         }
         CruxWidget().update(context, glanceId)
+    }
+}
+
+class JumpToGameAction : ActionCallback {
+    override suspend fun onAction(
+        context: Context,
+        glanceId: GlanceId,
+        parameters: ActionParameters
+    ) {
+        val database = CruxDatabase.getDatabase(context)
+        val items = withContext(Dispatchers.IO) {
+            database.cruxDao().getPublishedList()
+        }
+        val displayItems = if (items.isNotEmpty()) items else listOf(
+            CruxContent(
+                id = "game_001",
+                type = "GAME",
+                title = "QUICK MATH REFLEX",
+                body = "2 + 2 × 4 = ?",
+                published_at = "2026-08-20T10:05:00Z"
+            )
+        )
+        val gameIndex = displayItems.indexOfFirst { it.type.equals("GAME", ignoreCase = true) }
+
+        if (gameIndex >= 0) {
+            androidx.glance.appwidget.state.updateAppWidgetState(context, glanceId) { prefs ->
+                prefs[CURRENT_CARD_INDEX_KEY] = gameIndex
+                prefs[GAME_ANSWERED_STATE_KEY] = "NONE"
+            }
+            CruxWidget().update(context, glanceId)
+        }
     }
 }
 
