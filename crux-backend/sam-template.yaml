@@ -1,0 +1,58 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: CRUX Serverless Backend - AWS Free Tier Compatible
+
+Globals:
+  Function:
+    Timeout: 10
+    Runtime: nodejs20.x
+    Environment:
+      Variables:
+        TABLE_NAME: !Ref CruxContentTable
+        JWT_SECRET: "crux-production-secret-change-me"
+
+Resources:
+  CruxContentTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: CruxContentTable
+      BillingMode: PAY_PER_REQUEST # Always free tier eligible (up to 25 WCU/RCU)
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+        - AttributeName: status
+          AttributeType: S
+        - AttributeName: published_at
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+      GlobalSecondaryIndexes:
+        - IndexName: StatusIndex
+          KeySchema:
+            - AttributeName: status
+              KeyType: HASH
+            - AttributeName: published_at
+              KeyType: RANGE
+          Projection:
+            ProjectionType: ALL
+
+  CruxApiFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./
+      Handler: lambda.handler
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref CruxContentTable
+      Events:
+        ApiEvent:
+          Type: Api
+          Properties:
+            Path: /{proxy+}
+            Method: ANY
+
+Outputs:
+  ApiEndpoint:
+    Description: "API Gateway endpoint URL for Prod stage for CRUX Backend"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/"

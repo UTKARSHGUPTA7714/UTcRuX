@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CRUX · UTCRUX — Admin Dashboard & Widget Studio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="dark-theme">
+  <!-- Auth Overlay -->
+  <div id="authModal" class="modal-overlay">
+    <div class="auth-card dot-border">
+      <div class="auth-header">
+        <div class="brand-logo">CRUX <span>· UTCRUX</span></div>
+        <div class="auth-subtitle">ADMINISTRATOR CONTROL SYSTEM</div>
+      </div>
+      <form id="loginForm">
+        <div class="form-group">
+          <label for="loginUsername">USERNAME</label>
+          <input type="text" id="loginUsername" value="admin" required autocomplete="username">
+        </div>
+        <div class="form-group">
+          <label for="loginPassword">PASSWORD</label>
+          <input type="password" id="loginPassword" value="cruxadmin2026" required autocomplete="current-password">
+        </div>
+        <div id="authError" class="auth-error hidden">Invalid Credentials</div>
+        <button type="submit" class="btn btn-primary btn-full">LOGIN TO DASHBOARD</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Main Application Container -->
+  <div id="appContainer" class="app-layout hidden">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="logo">CRUX <span>· UTCRUX</span></div>
+        <div class="status-indicator"><span class="pulse-dot"></span> LIVE CONNECTED</div>
+      </div>
+
+      <nav class="nav-menu">
+        <button class="nav-item active" data-tab="dashboard">
+          <span class="nav-icon">▚</span> DASHBOARD
+        </button>
+        <button class="nav-item" data-tab="content">
+          <span class="nav-icon">☰</span> ALL CONTENT
+        </button>
+        <button class="nav-item" data-tab="create">
+          <span class="nav-icon">✚</span> CREATE CRUX
+        </button>
+        <button class="nav-item" data-tab="scheduled">
+          <span class="nav-icon">◷</span> SCHEDULED
+        </button>
+        <button class="nav-item" data-tab="analytics">
+          <span class="nav-icon">📈</span> ANALYTICS
+        </button>
+        <button class="nav-item" data-tab="settings">
+          <span class="nav-icon">⚙</span> SETTINGS
+        </button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="user-info">LOGGED IN AS <strong>ADMIN</strong></div>
+        <button id="logoutBtn" class="btn btn-outline btn-small">LOGOUT</button>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+      <!-- Top Header -->
+      <header class="topbar">
+        <div class="page-title" id="pageTitle">DASHBOARD OVERVIEW</div>
+        <div class="server-config">
+          <label>API ENDPOINT:</label>
+          <input type="text" id="apiBaseUrl" value="http://localhost:3000">
+        </div>
+      </header>
+
+      <!-- TAB 1: DASHBOARD OVERVIEW -->
+      <section id="tab-dashboard" class="tab-page active">
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-label">TOTAL ITEMS</div>
+            <div class="stat-value" id="statTotal">0</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">PUBLISHED NOW</div>
+            <div class="stat-value text-accent" id="statPublished">0</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">SCHEDULED</div>
+            <div class="stat-value" id="statScheduled">0</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">DRAFTS</div>
+            <div class="stat-value" id="statDrafts">0</div>
+          </div>
+        </div>
+
+        <div class="section-title">LATEST PUBLISHED FEED ITEM</div>
+        <div class="card feed-preview-card" id="latestItemCard">
+          <div class="loading-spinner">Loading latest item...</div>
+        </div>
+      </section>
+
+      <!-- TAB 2: CONTENT MANAGEMENT -->
+      <section id="tab-content" class="tab-page">
+        <div class="content-actions">
+          <input type="text" id="searchInput" placeholder="Search by title, body, category..." class="search-box">
+          <select id="typeFilter" class="filter-select">
+            <option value="ALL">ALL TYPES</option>
+            <option value="CRUX">CRUX</option>
+            <option value="QUOTE">QUOTE</option>
+            <option value="FACT">FACT</option>
+            <option value="QUESTION">QUESTION</option>
+            <option value="POLL">POLL</option>
+            <option value="GAME">GAME</option>
+            <option value="ALERT">ALERT</option>
+          </select>
+          <button id="refreshContentBtn" class="btn btn-secondary">↺ REFRESH</button>
+        </div>
+
+        <div class="table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>TYPE</th>
+                <th>TITLE / BODY</th>
+                <th>CATEGORY</th>
+                <th>STATUS</th>
+                <th>PRIORITY</th>
+                <th>PUBLISHED AT</th>
+                <th>ACTIONS</th>
+              </tr>
+            </thead>
+            <tbody id="contentTableBody">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- TAB 3: CREATE & WIDGET STUDIO PREVIEW -->
+      <section id="tab-create" class="tab-page">
+        <div class="editor-grid">
+          <!-- Editor Form -->
+          <div class="editor-column card">
+            <h3 class="card-title">CONTENT CREATOR</h3>
+            <form id="contentForm">
+              <input type="hidden" id="editId">
+              
+              <div class="form-row">
+                <div class="form-group flex-1">
+                  <label for="contentType">TYPE</label>
+                  <select id="contentType" required>
+                    <option value="CRUX">CRUX (Announcement)</option>
+                    <option value="QUOTE">QUOTE (Daily Quote)</option>
+                    <option value="FACT">FACT (Did You Know?)</option>
+                    <option value="QUESTION">QUESTION (Brain Teaser)</option>
+                    <option value="POLL">POLL (Interactive Poll)</option>
+                    <option value="GAME">GAME (Reflex / Quiz)</option>
+                    <option value="EVENT">EVENT (Reminder)</option>
+                    <option value="ALERT">ALERT (Urgent Notice)</option>
+                  </select>
+                </div>
+                <div class="form-group flex-1">
+                  <label for="contentCategory">CATEGORY</label>
+                  <input type="text" id="contentCategory" value="Campus" required>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="contentTitle">HEADER / TITLE</label>
+                <input type="text" id="contentTitle" placeholder="e.g. TOMORROW'S CLASSES" required>
+              </div>
+
+              <div class="form-group">
+                <label for="contentBody">FULL BODY CONTENT</label>
+                <textarea id="contentBody" rows="4" placeholder="Full message detail to be displayed in app & expanded widget..." required></textarea>
+              </div>
+
+              <div class="form-group">
+                <label for="contentShortText">SHORT WIDGET TEXT (Optimized for 2x2 Glance)</label>
+                <input type="text" id="contentShortText" placeholder="Concise 1-liner snippet for tight widget spaces">
+              </div>
+
+              <!-- GAME / MCQ Interactive Fields -->
+              <div id="mcqFormGroup" class="mcq-group hidden" style="background: #181818; padding: 14px; margin-bottom: 16px; border: 1px solid #333; border-radius: 8px;">
+                <h4 style="color: #ff9800; margin-top: 0; margin-bottom: 10px; font-size: 11px; letter-spacing: 1px; font-family: monospace;">INTERACTIVE MCQ GAME SETUP</h4>
+                <div class="form-group">
+                  <label for="mcqQuestion">QUESTION</label>
+                  <input type="text" id="mcqQuestion" placeholder="e.g. 2 + 2 × 4 = ?">
+                </div>
+                <div class="form-row">
+                  <div class="form-group flex-1">
+                    <label for="mcqOptA">OPTION A</label>
+                    <input type="text" id="mcqOptA" placeholder="Option 1 (e.g. 8)">
+                  </div>
+                  <div class="form-group flex-1">
+                    <label for="mcqOptB">OPTION B</label>
+                    <input type="text" id="mcqOptB" placeholder="Option 2 (e.g. 10)">
+                  </div>
+                </div>
+                <div class="form-row">
+                  <div class="form-group flex-1">
+                    <label for="mcqOptC">OPTION C</label>
+                    <input type="text" id="mcqOptC" placeholder="Option 3 (e.g. 12)">
+                  </div>
+                  <div class="form-group flex-1">
+                    <label for="mcqOptD">OPTION D</label>
+                    <input type="text" id="mcqOptD" placeholder="Option 4 (e.g. 16)">
+                  </div>
+                </div>
+                <div class="form-row">
+                  <div class="form-group flex-1">
+                    <label for="mcqCorrect">CORRECT ANSWER</label>
+                    <input type="text" id="mcqCorrect" placeholder="Exact match e.g. 10">
+                  </div>
+                  <div class="form-group flex-1">
+                    <label for="mcqPoints">POINTS</label>
+                    <input type="number" id="mcqPoints" value="10">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="mcqExplanation">EXPLANATION</label>
+                  <input type="text" id="mcqExplanation" placeholder="e.g. Multiplication is performed before addition.">
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group flex-1">
+                  <label for="contentAuthor">AUTHOR / SOURCE</label>
+                  <input type="text" id="contentAuthor" value="CRUX Team">
+                </div>
+                <div class="form-group flex-1">
+                  <label for="contentPriority">PRIORITY (0 = High, 10 = Low)</label>
+                  <input type="number" id="contentPriority" value="1" min="0" max="99">
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group flex-1">
+                  <label for="contentStatus">PUBLISH STATUS</label>
+                  <select id="contentStatus">
+                    <option value="PUBLISHED">PUBLISH IMMEDIATELY</option>
+                    <option value="SCHEDULED">SCHEDULE FOR LATER</option>
+                    <option value="DRAFT">SAVE AS DRAFT</option>
+                  </select>
+                </div>
+                <div class="form-group flex-1">
+                  <label for="scheduledAt">SCHEDULED AT (Optional)</label>
+                  <input type="datetime-local" id="scheduledAt">
+                </div>
+              </div>
+
+              <div class="form-actions">
+                <button type="button" id="saveDraftBtn" class="btn btn-secondary">SAVE DRAFT</button>
+                <button type="submit" class="btn btn-primary">PUBLISH CRUX</button>
+              </div>
+            </form>
+          </div>
+
+          <!-- Live Visual Widget Preview -->
+          <div class="preview-column card">
+            <div class="preview-header">
+              <h3 class="card-title">NOTHING OS WIDGET PREVIEW</h3>
+              <div class="widget-size-selector">
+                <button class="size-btn active" data-size="2x2">2×2</button>
+                <button class="size-btn" data-size="4x2">4×2</button>
+                <button class="size-btn" data-size="4x4">4×4</button>
+              </div>
+            </div>
+
+            <div class="phone-frame">
+              <div class="widget-container size-2x2" id="widgetPreviewBox">
+                <div class="widget-header">
+                  <span class="widget-tag" id="prevTag">CRUX</span>
+                  <span class="widget-dots">•••</span>
+                </div>
+                <div class="widget-content">
+                  <div class="widget-num" id="prevId">CRUX #108</div>
+                  <div class="widget-title" id="prevTitle">TOMORROW'S CLASSES</div>
+                  <div class="widget-body" id="prevBody">WILL BE CONDUCTED ONLINE.</div>
+                </div>
+                <div class="widget-footer">
+                  <span class="widget-time" id="prevTime">10:05 PM · 21 AUG</span>
+                  <span class="widget-nav">‹ 01/04 ›</span>
+                </div>
+              </div>
+            </div>
+            <div class="preview-hint">Live preview rendering using Nothing OS dot-matrix monochrome styling</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 4: SCHEDULED -->
+      <section id="tab-scheduled" class="tab-page">
+        <div class="section-title">UPCOMING SCHEDULED CONTENT</div>
+        <div id="scheduledItemsList" class="scheduled-list">
+          <!-- Dynamically populated -->
+        </div>
+      </section>
+
+      <!-- TAB 5: ANALYTICS -->
+      <section id="tab-analytics" class="tab-page">
+        <div class="section-title">LIGHTWEIGHT PRIVACY-FIRST ANALYTICS</div>
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-label">ACTIVE WIDGET INSTANCES</div>
+            <div class="stat-value text-accent">1,240</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">DAILY GLANCE IMPRESSIONS</div>
+            <div class="stat-value">14,850</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">GAME PLAYS TODAY</div>
+            <div class="stat-value">382</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">POLL PARTICIPANTS</div>
+            <div class="stat-value">610</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 6: SETTINGS & COST CONTROL -->
+      <section id="tab-settings" class="tab-page">
+        <div class="card">
+          <h3 class="card-title">AWS FREE TIER & COST CONTROL</h3>
+          <p>CRUX is built 100% serverless to ensure $0 operational overhead under typical usage.</p>
+          <ul class="cost-list">
+            <li>✓ <strong>AWS Lambda:</strong> 1,000,000 requests/month FREE</li>
+            <li>✓ <strong>Amazon DynamoDB:</strong> 25 GB storage + 25 WCU/RCU FREE</li>
+            <li>✓ <strong>Amazon API Gateway:</strong> 1,000,000 HTTP requests/month FREE</li>
+          </ul>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
