@@ -417,13 +417,20 @@ fun RenderMcqGameContent(
 }
 
 private fun formatTimestamp(isoStr: String?): String {
-    if (isoStr.isNullOrEmpty()) return "10:05 PM · 21 AUG"
+    if (isoStr.isNullOrEmpty()) return "02:20 · 21 AUG"
     return try {
-        val parts = isoStr.split("T")
-        val timePart = if (parts.size > 1) parts[1].take(5) else "10:05"
-        "$timePart · ${parts[0]}"
+        val instant = java.time.Instant.parse(isoStr)
+        val localDateTime = instant.atZone(java.time.ZoneId.systemDefault())
+        val formatter = java.time.format.DateTimeFormatter.ofPattern("HH:mm · dd MMM", java.util.Locale.US)
+        localDateTime.format(formatter).uppercase()
     } catch (e: Exception) {
-        "10:05 PM · 21 AUG"
+        try {
+            val parts = isoStr.split("T")
+            val timePart = if (parts.size > 1) parts[1].take(5) else "00:00"
+            "$timePart · ${parts[0]}"
+        } catch (e2: Exception) {
+            "02:20 · 21 AUG"
+        }
     }
 }
 
