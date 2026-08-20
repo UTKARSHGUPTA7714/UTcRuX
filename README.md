@@ -15,7 +15,8 @@ CRUX by UTcRuX is a modern, lightweight Android home-screen widget system built 
 - **Universal Arrow Navigation**: Seamlessly loop between published cards using expanded `‹` and `›` touch controls.
 - **Offline Room Cache**: Full offline reliability. Content is cached locally in SQLite via Room DB.
 - **System Local Timezone Conversion**: Automatic UTC $\rightarrow$ device system local timezone formatting.
-- **Public Cloudflare Backend**: Serverless public distribution powered by **Cloudflare Workers** and **Cloudflare D1**.
+- **Mobile Admin Studio**: Publish daily updates directly from Android Chrome at `https://crux-api.utcrux.workers.dev/admin` without needing a PC!
+- **Real-Time Push Distribution**: Cloudflare Worker $\rightarrow$ FCM Topic (`crux_public`) $\rightarrow$ Android `CruxFirebaseMessagingService` $\rightarrow$ Room DB $\rightarrow$ Glance Widget refresh!
 - **₹0 / $0 Budget**: 100% free serverless infrastructure operating within Cloudflare Free tier bounds.
 
 ---
@@ -33,24 +34,35 @@ CRUX by UTcRuX is a modern, lightweight Android home-screen widget system built 
 
 ---
 
-## 📥 Installation & Setup
+## 📥 Installation & Setup (For Users / Friends)
 
-> **Distribution Note**: CRUX is currently distributed as a standalone APK package and is not yet published on Google Play.
-
-1. **Download APK**: Get [`releases/CRUX-MVP.apk`](releases/CRUX-MVP.apk) from the latest GitHub Release.
+1. **Download APK**: Get [`releases/CRUX-MVP.apk`](releases/CRUX-MVP.apk) from the latest [GitHub Release](https://github.com/UTKARSHGUPTA7714/UTcRuX/releases).
 2. **Install**: Tap the `.apk` file on your Android device and allow installation from unknown sources if prompted.
 3. **Initialize**: Open the CRUX app once to perform initial local DB setup.
 4. **Add Widget**:
    - Long press any empty space on your Android home screen.
    - Select **Widgets** $\rightarrow$ scroll to **CRUX**.
    - Drag a `2x2`, `4x2`, or `4x4` widget onto your home screen.
-5. **Enjoy**: View live updates, navigate cards, and play mini-games directly from your home screen.
+5. **Enjoy**: Future daily CRUX updates will automatically appear on your widget without reinstalling the APK!
+
+---
+
+## 🚀 Daily Publisher Workflow (For Publisher)
+
+Publish today's CRUX from your Android phone without needing your PC:
+
+1. **Open Admin**: Go to `https://crux-api.utcrux.workers.dev/admin` in mobile Chrome.
+2. **Authenticate**: Tap **Authenticate** and enter your admin password.
+3. **Draft & Preview**: Select content type (`CRUX` or `GAME`), write headline and body, and review the live home-screen widget preview.
+4. **Publish**: Tap **🚀 PUBLISH TO ALL DEVICES**.
+5. **Auto Delivery**: Cloudflare Worker updates D1, triggers an FCM signal over topic `crux_public`, and all installed CRUX devices auto-refresh!
 
 ---
 
 ## 🌐 Public Cloudflare Infrastructure
 
 - **Production API**: `https://crux-api.utcrux.workers.dev`
+- **Mobile Admin Studio**: `https://crux-api.utcrux.workers.dev/admin`
 - **Database**: Cloudflare D1 SQLite (`crux-db`)
 - **Cost**: **$0 / ₹0** (Cloudflare Workers Free Tier)
 
