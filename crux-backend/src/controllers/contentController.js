@@ -1,4 +1,5 @@
 const repository = require('../repositories');
+const fcmService = require('../services/fcmService');
 
 async function getLatestContent(req, res) {
   try {
@@ -87,6 +88,14 @@ async function createContent(req, res) {
       }
     }
     const saved = await repository.save(req.body);
+
+    // Dispatch lightweight FCM push signal (Fail-safe: Database record remains published if FCM fails)
+    try {
+      await fcmService.sendPushSignal(saved.id, 'CRUX_UPDATED');
+    } catch (fcmErr) {
+      console.warn('⚠️ Non-blocking FCM push signal error:', fcmErr.message || fcmErr);
+    }
+
     res.status(201).json({ message: 'Content created successfully', data: saved });
   } catch (err) {
     res.status(500).json({ error: 'Failed saving content' });

@@ -79,6 +79,9 @@ dependencies {
     // WorkManager Background Sync
     implementation("androidx.work:work-runtime-ktx:2.9.0")
 
+    // Firebase Cloud Messaging (FCM Push Signal)
+    implementation("com.google.firebase:firebase-messaging-ktx:23.4.1")
+
     // Testing
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")

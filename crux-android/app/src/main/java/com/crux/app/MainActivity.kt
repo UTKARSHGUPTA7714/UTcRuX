@@ -37,6 +37,40 @@ class MainActivity : ComponentActivity() {
                 CruxApp(repository = repository)
             }
         }
+
+        // Auto-subscribe client to FCM topic "crux_public"
+        try {
+            com.google.firebase.FirebaseApp.initializeApp(applicationContext)
+            com.google.firebase.messaging.FirebaseMessaging.getInstance().subscribeToTopic("crux_public")
+                .addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        android.util.Log.d("MainActivity", "Successfully subscribed to FCM topic: crux_public")
+                    } else {
+                        android.util.Log.w("MainActivity", "FCM topic subscription (Dev Mode / No google-services.json)")
+                    }
+                }
+        } catch (e: Exception) {
+            android.util.Log.i("MainActivity", "Firebase Messaging initialized in dev fallback mode: ${e.message}")
+        }
+
+        // Schedule WorkManager periodic catchup sync (1 hour interval)
+        try {
+            val syncWorkRequest = androidx.work.PeriodicWorkRequestBuilder<com.crux.app.service.CruxSyncWorker>(
+                1, java.util.concurrent.TimeUnit.HOURS
+            ).setConstraints(
+                androidx.work.Constraints.Builder()
+                    .setRequiredNetworkType(androidx.work.NetworkType.CONNECTED)
+                    .build()
+            ).build()
+
+            androidx.work.WorkManager.getInstance(applicationContext).enqueueUniquePeriodicWork(
+                com.crux.app.service.CruxSyncWorker.WORK_NAME,
+                androidx.work.ExistingPeriodicWorkPolicy.KEEP,
+                syncWorkRequest
+            )
+        } catch (e: Exception) {
+            android.util.Log.e("MainActivity", "WorkManager schedule exception", e)
+        }
     }
 }
 
