@@ -155,6 +155,23 @@ export default {
         }
 
         const body = await request.json();
+
+        // Server-side GAME content validation
+        if (body.type === 'GAME') {
+          if (!body.question || !body.question.trim()) {
+            return jsonResponse({ error: 'Validation Error: GAME content requires a valid question' }, 400);
+          }
+          let opts = [];
+          try {
+            opts = typeof body.options === 'string' ? JSON.parse(body.options) : body.options;
+          } catch (e) {
+            return jsonResponse({ error: 'Validation Error: GAME options must be a valid JSON array' }, 400);
+          }
+          if (!Array.isArray(opts) || opts.length < 2) {
+            return jsonResponse({ error: 'Validation Error: GAME options must contain at least 2 non-empty choices' }, 400);
+          }
+        }
+
         const id = body.id || `crux_${Date.now()}`;
         const now = new Date().toISOString();
 

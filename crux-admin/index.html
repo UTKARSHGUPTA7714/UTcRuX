@@ -3,345 +3,680 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CRUX · UTCRUX — Admin Dashboard & Widget Studio</title>
+  <title>UTcRuX — Admin Studio</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-primary: #0A0A0C;
+      --bg-surface: #141418;
+      --bg-card: #1C1C22;
+      --border-color: #2D2D36;
+      --text-main: #F0F0F5;
+      --text-muted: #8E8E9F;
+      --accent-red: #D00000;
+      --accent-orange: #FF9800;
+      --accent-green: #00E676;
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 16px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', system-ui, sans-serif; }
+
+    body {
+      background-color: var(--bg-primary);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      background: var(--bg-surface);
+      border-bottom: 1px solid var(--border-color);
+      padding: 16px 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-title {
+      font-weight: 700;
+      font-size: 18px;
+      color: var(--accent-red);
+      letter-spacing: -0.5px;
+    }
+
+    .brand-subtitle {
+      font-size: 12px;
+      color: var(--text-muted);
+      border-left: 1px solid var(--border-color);
+      padding-left: 12px;
+    }
+
+    .auth-status {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 13px;
+    }
+
+    .status-badge {
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-weight: 600;
+      font-size: 11px;
+    }
+
+    .status-badge.connected { background: rgba(0, 230, 118, 0.15); color: var(--accent-green); border: 1px solid rgba(0, 230, 118, 0.3); }
+    .status-badge.locked { background: rgba(208, 0, 0, 0.15); color: #FF5252; border: 1px solid rgba(208, 0, 0, 0.3); }
+
+    .btn {
+      background: #252530;
+      color: var(--text-main);
+      border: 1px solid var(--border-color);
+      padding: 8px 16px;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn:hover { background: #323242; }
+
+    .btn-primary {
+      background: var(--accent-red);
+      border-color: var(--accent-red);
+      color: #FFF;
+    }
+
+    .btn-primary:hover { background: #E50000; }
+
+    .btn-danger {
+      background: rgba(208, 0, 0, 0.2);
+      color: #FF5252;
+      border: 1px solid rgba(208, 0, 0, 0.4);
+      padding: 4px 10px;
+      font-size: 11px;
+    }
+
+    .btn-danger:hover { background: rgba(208, 0, 0, 0.4); }
+
+    main {
+      max-width: 1200px;
+      margin: 32px auto;
+      padding: 0 24px;
+      width: 100%;
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 32px;
+    }
+
+    .panel {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+    }
+
+    .panel-title {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 10px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      transition: border-color 0.2s;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: var(--accent-orange);
+    }
+
+    textarea { resize: vertical; min-height: 90px; }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .grid-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 12px; }
+
+    /* Widget Live Preview */
+    .preview-container {
+      background: #080808;
+      border: 2px solid #222;
+      border-radius: 20px;
+      padding: 16px;
+      width: 100%;
+      max-width: 340px;
+      margin: 0 auto;
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.6);
+    }
+
+    .preview-header {
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--accent-red);
+      margin-bottom: 8px;
+    }
+
+    .preview-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: #FFF;
+      margin-bottom: 8px;
+      line-height: 1.3;
+    }
+
+    .preview-body {
+      font-size: 12px;
+      color: #CCC;
+      line-height: 1.4;
+      margin-bottom: 12px;
+    }
+
+    .preview-options {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .preview-opt {
+      background: #181818;
+      border: 1px solid #333;
+      color: #EEE;
+      padding: 8px;
+      font-size: 11px;
+      text-align: center;
+      border-radius: 6px;
+      font-weight: 600;
+    }
+
+    .preview-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 9px;
+      color: #777;
+      border-top: 1px solid #1A1A1A;
+      padding-top: 8px;
+    }
+
+    .alert {
+      padding: 12px 16px;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      margin-bottom: 16px;
+      display: none;
+    }
+
+    .alert-success { background: rgba(0, 230, 118, 0.15); border: 1px solid rgba(0, 230, 118, 0.3); color: var(--accent-green); }
+    .alert-error { background: rgba(208, 0, 0, 0.15); border: 1px solid rgba(208, 0, 0, 0.3); color: #FF5252; }
+
+    /* Modal */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.85);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+
+    .modal {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      padding: 32px;
+      border-radius: var(--radius-lg);
+      width: 100%;
+      max-width: 400px;
+    }
+
+    .table-container {
+      margin-top: 16px;
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    th { text-align: left; padding: 10px; color: var(--text-muted); border-bottom: 1px solid var(--border-color); font-size: 11px; text-transform: uppercase; }
+    td { padding: 12px 10px; border-bottom: 1px solid #1F1F26; }
+  </style>
 </head>
-<body class="dark-theme">
-  <!-- Auth Overlay -->
-  <div id="authModal" class="modal-overlay">
-    <div class="auth-card dot-border">
-      <div class="auth-header">
-        <div class="brand-logo">CRUX <span>· UTCRUX</span></div>
-        <div class="auth-subtitle">ADMINISTRATOR CONTROL SYSTEM</div>
+<body>
+
+  <header>
+    <div class="brand">
+      <div class="brand-title">UTcRuX</div>
+      <div class="brand-subtitle">Production Admin Studio</div>
+    </div>
+    <div class="auth-status">
+      <span id="authBadge" class="status-badge locked">LOCKED</span>
+      <button id="loginBtn" class="btn" onclick="openLoginModal()">Authenticate</button>
+    </div>
+  </header>
+
+  <main>
+    <!-- Left Column: Publisher Form -->
+    <div class="panel">
+      <div class="panel-title">
+        <span>Publish Daily Content</span>
+        <span style="font-size: 12px; color: var(--text-muted);" id="apiTargetLabel">API: Cloudflare Worker</span>
       </div>
-      <form id="loginForm">
-        <div class="form-group">
-          <label for="loginUsername">USERNAME</label>
-          <input type="text" id="loginUsername" value="admin" required autocomplete="username">
+
+      <div id="alertBox" class="alert"></div>
+
+      <form id="publishForm" onsubmit="handlePublish(event)">
+        <div class="grid-2">
+          <div class="form-group">
+            <label for="contentType">Content Type</label>
+            <select id="contentType" onchange="toggleFormFields()">
+              <option value="CRUX">CRUX (Standard Update)</option>
+              <option value="QUOTE">QUOTE</option>
+              <option value="FACT">FACT</option>
+              <option value="QUESTION">QUESTION</option>
+              <option value="GAME">GAME (MCQ Quiz)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="category">Category</label>
+            <input type="text" id="category" value="GENERAL" placeholder="ANNOUNCEMENT, TECH, MATH...">
+          </div>
         </div>
+
         <div class="form-group">
-          <label for="loginPassword">PASSWORD</label>
-          <input type="password" id="loginPassword" value="cruxadmin2026" required autocomplete="current-password">
+          <label for="title">Title / Headline</label>
+          <input type="text" id="title" required placeholder="e.g. CRUX DAILY TEST #001" oninput="updateLivePreview()">
         </div>
-        <div id="authError" class="auth-error hidden">Invalid Credentials</div>
-        <button type="submit" class="btn btn-primary btn-full">LOGIN TO DASHBOARD</button>
+
+        <div class="form-group" id="bodyGroup">
+          <label for="body">Content Body</label>
+          <textarea id="body" placeholder="Write concise, punchy text for home-screen display..." oninput="updateLivePreview()"></textarea>
+        </div>
+
+        <!-- GAME Specific Fields -->
+        <div id="gameFields" style="display: none; border-top: 1px solid var(--border-color); padding-top: 16px; margin-top: 16px;">
+          <div class="form-group">
+            <label for="gameQuestion">MCQ Question</label>
+            <input type="text" id="gameQuestion" placeholder="e.g., 2 + 2 × 4 = ?" oninput="updateLivePreview()">
+          </div>
+
+          <div class="grid-2">
+            <div class="form-group"><label for="optA">Option A</label><input type="text" id="optA" placeholder="8" oninput="updateLivePreview()"></div>
+            <div class="form-group"><label for="optB">Option B</label><input type="text" id="optB" placeholder="10" oninput="updateLivePreview()"></div>
+            <div class="form-group"><label for="optC">Option C</label><input type="text" id="optC" placeholder="12" oninput="updateLivePreview()"></div>
+            <div class="form-group"><label for="optD">Option D</label><input type="text" id="optD" placeholder="16" oninput="updateLivePreview()"></div>
+          </div>
+
+          <div class="grid-2">
+            <div class="form-group">
+              <label for="correctAnswer">Correct Option</label>
+              <select id="correctAnswer">
+                <option value="A">Option A</option>
+                <option value="B">Option B</option>
+                <option value="C">Option C</option>
+                <option value="D">Option D</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="gamePoints">Reward Points</label>
+              <input type="number" id="gamePoints" value="10" min="1" max="100">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="explanation">Answer Explanation</label>
+            <input type="text" id="explanation" placeholder="e.g. Multiplication happens before addition (2 + 8 = 10).">
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="form-group">
+            <label for="priority">Priority (1–10)</label>
+            <input type="number" id="priority" value="10" min="1" max="10">
+          </div>
+          <div class="form-group" style="display: flex; align-items: flex-end;">
+            <button type="submit" class="btn btn-primary" style="width: 100%; height: 42px;">Publish Content</button>
+          </div>
+        </div>
       </form>
     </div>
-  </div>
 
-  <!-- Main Application Container -->
-  <div id="appContainer" class="app-layout hidden">
-    <!-- Sidebar Navigation -->
-    <aside class="sidebar">
-      <div class="sidebar-header">
-        <div class="logo">CRUX <span>· UTCRUX</span></div>
-        <div class="status-indicator"><span class="pulse-dot"></span> LIVE CONNECTED</div>
+    <!-- Right Column: Live Preview & Feed Table -->
+    <div>
+      <div class="panel" style="margin-bottom: 24px;">
+        <div class="panel-title">Live Widget Preview</div>
+        <div class="preview-container">
+          <div class="preview-header">UTcRuX</div>
+          <div class="preview-title" id="prevTitle">CRUX DAILY TEST #001</div>
+          <div class="preview-body" id="prevBody">This is how your published update will look on the user's home screen widget.</div>
+          
+          <div class="preview-options" id="prevOptions" style="display: none;">
+            <div class="preview-opt" id="prevOptA">[ A ]</div>
+            <div class="preview-opt" id="prevOptB">[ B ]</div>
+            <div class="preview-opt" id="prevOptC">[ C ]</div>
+            <div class="preview-opt" id="prevOptD">[ D ]</div>
+          </div>
+
+          <div class="preview-footer">
+            <span id="prevTimestamp">JUST NOW</span>
+            <span>▶ &nbsp; ‹ 01/01 ›</span>
+          </div>
+        </div>
       </div>
 
-      <nav class="nav-menu">
-        <button class="nav-item active" data-tab="dashboard">
-          <span class="nav-icon">▚</span> DASHBOARD
-        </button>
-        <button class="nav-item" data-tab="content">
-          <span class="nav-icon">☰</span> ALL CONTENT
-        </button>
-        <button class="nav-item" data-tab="create">
-          <span class="nav-icon">✚</span> CREATE CRUX
-        </button>
-        <button class="nav-item" data-tab="scheduled">
-          <span class="nav-icon">◷</span> SCHEDULED
-        </button>
-        <button class="nav-item" data-tab="analytics">
-          <span class="nav-icon">📈</span> ANALYTICS
-        </button>
-        <button class="nav-item" data-tab="settings">
-          <span class="nav-icon">⚙</span> SETTINGS
-        </button>
-      </nav>
-
-      <div class="sidebar-footer">
-        <div class="user-info">LOGGED IN AS <strong>ADMIN</strong></div>
-        <button id="logoutBtn" class="btn btn-outline btn-small">LOGOUT</button>
-      </div>
-    </aside>
-
-    <!-- Main Content Area -->
-    <main class="main-content">
-      <!-- Top Header -->
-      <header class="topbar">
-        <div class="page-title" id="pageTitle">DASHBOARD OVERVIEW</div>
-        <div class="server-config">
-          <label>API ENDPOINT:</label>
-          <input type="text" id="apiBaseUrl" value="http://localhost:3000">
+      <div class="panel">
+        <div class="panel-title">
+          <span>Published Feed</span>
+          <button class="btn" style="padding: 4px 10px; font-size: 11px;" onclick="loadFeed()">Refresh</button>
         </div>
-      </header>
-
-      <!-- TAB 1: DASHBOARD OVERVIEW -->
-      <section id="tab-dashboard" class="tab-page active">
-        <div class="stats-grid">
-          <div class="stat-card">
-            <div class="stat-label">TOTAL ITEMS</div>
-            <div class="stat-value" id="statTotal">0</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-label">PUBLISHED NOW</div>
-            <div class="stat-value text-accent" id="statPublished">0</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-label">SCHEDULED</div>
-            <div class="stat-value" id="statScheduled">0</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-label">DRAFTS</div>
-            <div class="stat-value" id="statDrafts">0</div>
-          </div>
-        </div>
-
-        <div class="section-title">LATEST PUBLISHED FEED ITEM</div>
-        <div class="card feed-preview-card" id="latestItemCard">
-          <div class="loading-spinner">Loading latest item...</div>
-        </div>
-      </section>
-
-      <!-- TAB 2: CONTENT MANAGEMENT -->
-      <section id="tab-content" class="tab-page">
-        <div class="content-actions">
-          <input type="text" id="searchInput" placeholder="Search by title, body, category..." class="search-box">
-          <select id="typeFilter" class="filter-select">
-            <option value="ALL">ALL TYPES</option>
-            <option value="CRUX">CRUX</option>
-            <option value="QUOTE">QUOTE</option>
-            <option value="FACT">FACT</option>
-            <option value="QUESTION">QUESTION</option>
-            <option value="POLL">POLL</option>
-            <option value="GAME">GAME</option>
-            <option value="ALERT">ALERT</option>
-          </select>
-          <button id="refreshContentBtn" class="btn btn-secondary">↺ REFRESH</button>
-        </div>
-
         <div class="table-container">
-          <table class="data-table">
+          <table>
             <thead>
               <tr>
-                <th>TYPE</th>
-                <th>TITLE / BODY</th>
-                <th>CATEGORY</th>
-                <th>STATUS</th>
-                <th>PRIORITY</th>
-                <th>PUBLISHED AT</th>
-                <th>ACTIONS</th>
+                <th>Title</th>
+                <th>Type</th>
+                <th>Published</th>
+                <th>Action</th>
               </tr>
             </thead>
-            <tbody id="contentTableBody">
-              <!-- Dynamically populated -->
+            <tbody id="feedTableBody">
+              <tr><td colspan="4" style="color: var(--text-muted); text-align: center;">Loading published items...</td></tr>
             </tbody>
           </table>
         </div>
-      </section>
+      </div>
+    </div>
+  </main>
 
-      <!-- TAB 3: CREATE & WIDGET STUDIO PREVIEW -->
-      <section id="tab-create" class="tab-page">
-        <div class="editor-grid">
-          <!-- Editor Form -->
-          <div class="editor-column card">
-            <h3 class="card-title">CONTENT CREATOR</h3>
-            <form id="contentForm">
-              <input type="hidden" id="editId">
-              
-              <div class="form-row">
-                <div class="form-group flex-1">
-                  <label for="contentType">TYPE</label>
-                  <select id="contentType" required>
-                    <option value="CRUX">CRUX (Announcement)</option>
-                    <option value="QUOTE">QUOTE (Daily Quote)</option>
-                    <option value="FACT">FACT (Did You Know?)</option>
-                    <option value="QUESTION">QUESTION (Brain Teaser)</option>
-                    <option value="POLL">POLL (Interactive Poll)</option>
-                    <option value="GAME">GAME (Reflex / Quiz)</option>
-                    <option value="EVENT">EVENT (Reminder)</option>
-                    <option value="ALERT">ALERT (Urgent Notice)</option>
-                  </select>
-                </div>
-                <div class="form-group flex-1">
-                  <label for="contentCategory">CATEGORY</label>
-                  <input type="text" id="contentCategory" value="Campus" required>
-                </div>
-              </div>
-
-              <div class="form-group">
-                <label for="contentTitle">HEADER / TITLE</label>
-                <input type="text" id="contentTitle" placeholder="e.g. TOMORROW'S CLASSES" required>
-              </div>
-
-              <div class="form-group">
-                <label for="contentBody">FULL BODY CONTENT</label>
-                <textarea id="contentBody" rows="4" placeholder="Full message detail to be displayed in app & expanded widget..." required></textarea>
-              </div>
-
-              <div class="form-group">
-                <label for="contentShortText">SHORT WIDGET TEXT (Optimized for 2x2 Glance)</label>
-                <input type="text" id="contentShortText" placeholder="Concise 1-liner snippet for tight widget spaces">
-              </div>
-
-              <!-- GAME / MCQ Interactive Fields -->
-              <div id="mcqFormGroup" class="mcq-group hidden" style="background: #181818; padding: 14px; margin-bottom: 16px; border: 1px solid #333; border-radius: 8px;">
-                <h4 style="color: #ff9800; margin-top: 0; margin-bottom: 10px; font-size: 11px; letter-spacing: 1px; font-family: monospace;">INTERACTIVE MCQ GAME SETUP</h4>
-                <div class="form-group">
-                  <label for="mcqQuestion">QUESTION</label>
-                  <input type="text" id="mcqQuestion" placeholder="e.g. 2 + 2 × 4 = ?">
-                </div>
-                <div class="form-row">
-                  <div class="form-group flex-1">
-                    <label for="mcqOptA">OPTION A</label>
-                    <input type="text" id="mcqOptA" placeholder="Option 1 (e.g. 8)">
-                  </div>
-                  <div class="form-group flex-1">
-                    <label for="mcqOptB">OPTION B</label>
-                    <input type="text" id="mcqOptB" placeholder="Option 2 (e.g. 10)">
-                  </div>
-                </div>
-                <div class="form-row">
-                  <div class="form-group flex-1">
-                    <label for="mcqOptC">OPTION C</label>
-                    <input type="text" id="mcqOptC" placeholder="Option 3 (e.g. 12)">
-                  </div>
-                  <div class="form-group flex-1">
-                    <label for="mcqOptD">OPTION D</label>
-                    <input type="text" id="mcqOptD" placeholder="Option 4 (e.g. 16)">
-                  </div>
-                </div>
-                <div class="form-row">
-                  <div class="form-group flex-1">
-                    <label for="mcqCorrect">CORRECT ANSWER</label>
-                    <input type="text" id="mcqCorrect" placeholder="Exact match e.g. 10">
-                  </div>
-                  <div class="form-group flex-1">
-                    <label for="mcqPoints">POINTS</label>
-                    <input type="number" id="mcqPoints" value="10">
-                  </div>
-                </div>
-                <div class="form-group">
-                  <label for="mcqExplanation">EXPLANATION</label>
-                  <input type="text" id="mcqExplanation" placeholder="e.g. Multiplication is performed before addition.">
-                </div>
-              </div>
-
-              <div class="form-row">
-                <div class="form-group flex-1">
-                  <label for="contentAuthor">AUTHOR / SOURCE</label>
-                  <input type="text" id="contentAuthor" value="CRUX Team">
-                </div>
-                <div class="form-group flex-1">
-                  <label for="contentPriority">PRIORITY (0 = High, 10 = Low)</label>
-                  <input type="number" id="contentPriority" value="1" min="0" max="99">
-                </div>
-              </div>
-
-              <div class="form-row">
-                <div class="form-group flex-1">
-                  <label for="contentStatus">PUBLISH STATUS</label>
-                  <select id="contentStatus">
-                    <option value="PUBLISHED">PUBLISH IMMEDIATELY</option>
-                    <option value="SCHEDULED">SCHEDULE FOR LATER</option>
-                    <option value="DRAFT">SAVE AS DRAFT</option>
-                  </select>
-                </div>
-                <div class="form-group flex-1">
-                  <label for="scheduledAt">SCHEDULED AT (Optional)</label>
-                  <input type="datetime-local" id="scheduledAt">
-                </div>
-              </div>
-
-              <div class="form-actions">
-                <button type="button" id="saveDraftBtn" class="btn btn-secondary">SAVE DRAFT</button>
-                <button type="submit" class="btn btn-primary">PUBLISH CRUX</button>
-              </div>
-            </form>
-          </div>
-
-          <!-- Live Visual Widget Preview -->
-          <div class="preview-column card">
-            <div class="preview-header">
-              <h3 class="card-title">NOTHING OS WIDGET PREVIEW</h3>
-              <div class="widget-size-selector">
-                <button class="size-btn active" data-size="2x2">2×2</button>
-                <button class="size-btn" data-size="4x2">4×2</button>
-                <button class="size-btn" data-size="4x4">4×4</button>
-              </div>
-            </div>
-
-            <div class="phone-frame">
-              <div class="widget-container size-2x2" id="widgetPreviewBox">
-                <div class="widget-header">
-                  <span class="widget-tag" id="prevTag">CRUX</span>
-                  <span class="widget-dots">•••</span>
-                </div>
-                <div class="widget-content">
-                  <div class="widget-num" id="prevId">CRUX #108</div>
-                  <div class="widget-title" id="prevTitle">TOMORROW'S CLASSES</div>
-                  <div class="widget-body" id="prevBody">WILL BE CONDUCTED ONLINE.</div>
-                </div>
-                <div class="widget-footer">
-                  <span class="widget-time" id="prevTime">10:05 PM · 21 AUG</span>
-                  <span class="widget-nav">‹ 01/04 ›</span>
-                </div>
-              </div>
-            </div>
-            <div class="preview-hint">Live preview rendering using Nothing OS dot-matrix monochrome styling</div>
-          </div>
-        </div>
-      </section>
-
-      <!-- TAB 4: SCHEDULED -->
-      <section id="tab-scheduled" class="tab-page">
-        <div class="section-title">UPCOMING SCHEDULED CONTENT</div>
-        <div id="scheduledItemsList" class="scheduled-list">
-          <!-- Dynamically populated -->
-        </div>
-      </section>
-
-      <!-- TAB 5: ANALYTICS -->
-      <section id="tab-analytics" class="tab-page">
-        <div class="section-title">LIGHTWEIGHT PRIVACY-FIRST ANALYTICS</div>
-        <div class="stats-grid">
-          <div class="stat-card">
-            <div class="stat-label">ACTIVE WIDGET INSTANCES</div>
-            <div class="stat-value text-accent">1,240</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-label">DAILY GLANCE IMPRESSIONS</div>
-            <div class="stat-value">14,850</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-label">GAME PLAYS TODAY</div>
-            <div class="stat-value">382</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-label">POLL PARTICIPANTS</div>
-            <div class="stat-value">610</div>
-          </div>
-        </div>
-      </section>
-
-      <!-- TAB 6: SETTINGS & COST CONTROL -->
-      <section id="tab-settings" class="tab-page">
-        <div class="card">
-          <h3 class="card-title">AWS FREE TIER & COST CONTROL</h3>
-          <p>CRUX is built 100% serverless to ensure $0 operational overhead under typical usage.</p>
-          <ul class="cost-list">
-            <li>✓ <strong>AWS Lambda:</strong> 1,000,000 requests/month FREE</li>
-            <li>✓ <strong>Amazon DynamoDB:</strong> 25 GB storage + 25 WCU/RCU FREE</li>
-            <li>✓ <strong>Amazon API Gateway:</strong> 1,000,000 HTTP requests/month FREE</li>
-          </ul>
-        </div>
-      </section>
-    </main>
+  <!-- Login Modal -->
+  <div id="loginModal" class="modal-overlay" style="display: none;">
+    <div class="modal">
+      <h3 style="margin-bottom: 16px;">Admin Authentication</h3>
+      <div class="form-group">
+        <label for="adminUsername">Username</label>
+        <input type="text" id="adminUsername" value="admin">
+      </div>
+      <div class="form-group">
+        <label for="adminPassword">Password</label>
+        <input type="password" id="adminPassword" placeholder="Enter admin password...">
+      </div>
+      <div style="display: flex; gap: 12px; margin-top: 24px;">
+        <button class="btn" style="flex: 1;" onclick="closeLoginModal()">Cancel</button>
+        <button class="btn btn-primary" style="flex: 1;" onclick="performLogin()">Authenticate</button>
+      </div>
+    </div>
   </div>
 
-  <script src="app.js"></script>
+  <script>
+    const API_BASE = 'https://crux-api.utcrux.workers.dev';
+    let authToken = sessionStorage.getItem('crux_admin_token') || null;
+
+    document.addEventListener('DOMContentLoaded', () => {
+      checkAuth();
+      loadFeed();
+      updateLivePreview();
+    });
+
+    function checkAuth() {
+      const badge = document.getElementById('authBadge');
+      const loginBtn = document.getElementById('loginBtn');
+      if (authToken) {
+        badge.textContent = 'AUTHENTICATED';
+        badge.className = 'status-badge connected';
+        loginBtn.textContent = 'Log Out';
+        loginBtn.onclick = logout;
+      } else {
+        badge.textContent = 'LOCKED';
+        badge.className = 'status-badge locked';
+        loginBtn.textContent = 'Authenticate';
+        loginBtn.onclick = openLoginModal;
+      }
+    }
+
+    function openLoginModal() { document.getElementById('loginModal').style.display = 'flex'; }
+    function closeLoginModal() { document.getElementById('loginModal').style.display = 'none'; }
+
+    async function performLogin() {
+      const username = document.getElementById('adminUsername').value;
+      const password = document.getElementById('adminPassword').value;
+      
+      try {
+        const res = await fetch(`${API_BASE}/admin/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password })
+        });
+        const data = await res.json();
+        if (res.ok && data.token) {
+          authToken = data.token;
+          sessionStorage.setItem('crux_admin_token', authToken);
+          checkAuth();
+          closeLoginModal();
+          showAlert('✓ Admin authentication successful', 'success');
+        } else {
+          alert('Authentication failed: ' + (data.error || 'Invalid credentials'));
+        }
+      } catch (err) {
+        alert('Network error: ' + err.message);
+      }
+    }
+
+    function logout() {
+      authToken = null;
+      sessionStorage.removeItem('crux_admin_token');
+      checkAuth();
+      showAlert('Logged out of Admin Studio', 'success');
+    }
+
+    function toggleFormFields() {
+      const type = document.getElementById('contentType').value;
+      const gameFields = document.getElementById('gameFields');
+      const bodyGroup = document.getElementById('bodyGroup');
+      
+      if (type === 'GAME') {
+        gameFields.style.display = 'block';
+        bodyGroup.style.display = 'none';
+      } else {
+        gameFields.style.display = 'none';
+        bodyGroup.style.display = 'block';
+      }
+      updateLivePreview();
+    }
+
+    function updateLivePreview() {
+      const type = document.getElementById('contentType').value;
+      const title = document.getElementById('title').value || 'CRUX DAILY TEST #001';
+      const body = document.getElementById('body').value || 'Concise update text for home-screen rendering...';
+      const question = document.getElementById('gameQuestion').value || '2 + 2 × 4 = ?';
+
+      document.getElementById('prevTitle').textContent = title;
+
+      if (type === 'GAME') {
+        document.getElementById('prevBody').textContent = question;
+        document.getElementById('prevOptions').style.display = 'grid';
+        document.getElementById('prevOptA').textContent = '[ ' + (document.getElementById('optA').value || '8') + ' ]';
+        document.getElementById('prevOptB').textContent = '[ ' + (document.getElementById('optB').value || '10') + ' ]';
+        document.getElementById('prevOptC').textContent = '[ ' + (document.getElementById('optC').value || '12') + ' ]';
+        document.getElementById('prevOptD').textContent = '[ ' + (document.getElementById('optD').value || '16') + ' ]';
+      } else {
+        document.getElementById('prevBody').textContent = body;
+        document.getElementById('prevOptions').style.display = 'none';
+      }
+    }
+
+    async function handlePublish(e) {
+      e.preventDefault();
+      if (!authToken) {
+        openLoginModal();
+        return;
+      }
+
+      const type = document.getElementById('contentType').value;
+      const title = document.getElementById('title').value;
+      const category = document.getElementById('category').value;
+      const priority = parseInt(document.getElementById('priority').value, 10);
+      const now = new Date().toISOString();
+
+      let payload = {
+        id: `crux_${Date.now()}`,
+        type,
+        title,
+        category,
+        priority,
+        status: 'PUBLISHED',
+        published_at: now
+      };
+
+      if (type === 'GAME') {
+        const question = document.getElementById('gameQuestion').value;
+        const optA = document.getElementById('optA').value;
+        const optB = document.getElementById('optB').value;
+        const optC = document.getElementById('optC').value;
+        const optD = document.getElementById('optD').value;
+        const correctOptKey = document.getElementById('correctAnswer').value;
+        
+        const optionsArr = [optA, optB, optC, optD].filter(o => o.trim() !== '');
+        if (optionsArr.length < 2) {
+          showAlert('GAME card must provide at least 2 non-empty options!', 'error');
+          return;
+        }
+
+        let correctVal = optA;
+        if (correctOptKey === 'B') correctVal = optB;
+        if (correctOptKey === 'C') correctVal = optC;
+        if (correctOptKey === 'D') correctVal = optD;
+
+        payload.body = question;
+        payload.question = question;
+        payload.options = JSON.stringify(optionsArr);
+        payload.correct_answer = correctVal;
+        payload.explanation = document.getElementById('explanation').value || null;
+        payload.points = parseInt(document.getElementById('gamePoints').value, 10) || 10;
+      } else {
+        payload.body = document.getElementById('body').value || title;
+      }
+
+      try {
+        const res = await fetch(`${API_BASE}/admin/content`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${authToken}`
+          },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await res.json();
+        if (res.ok) {
+          const pubTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) + ' · ' + new Date().toLocaleDateString([], { day: '2-digit', month: 'short' });
+          showAlert(`✓ CRUX PUBLISHED<br>Content ID: <strong>${data.data.id}</strong><br>Published: ${pubTime}`, 'success');
+          document.getElementById('publishForm').reset();
+          toggleFormFields();
+          loadFeed();
+        } else {
+          showAlert(`Publish Failed: ${data.error || 'Server error'}`, 'error');
+        }
+      } catch (err) {
+        showAlert(`Network error: ${err.message}`, 'error');
+      }
+    }
+
+    async function loadFeed() {
+      try {
+        const res = await fetch(`${API_BASE}/content/feed?limit=20`);
+        const data = await res.json();
+        const tbody = document.getElementById('feedTableBody');
+        tbody.innerHTML = '';
+
+        if (Array.isArray(data) && data.length > 0) {
+          data.forEach(item => {
+            const tr = document.createElement('tr');
+            const dateStr = item.published_at ? new Date(item.published_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'N/A';
+            tr.innerHTML = `
+              <td><strong>${item.title}</strong></td>
+              <td><span style="font-size: 10px; padding: 2px 6px; background: #2A2A36; border-radius: 4px;">${item.type}</span></td>
+              <td style="color: var(--text-muted);">${dateStr}</td>
+              <td><button class="btn btn-danger" onclick="deleteContent('${item.id}')">Delete</button></td>
+            `;
+            tbody.appendChild(tr);
+          });
+        } else {
+          tbody.innerHTML = `<tr><td colspan="4" style="color: var(--text-muted); text-align: center;">No published content items found.</td></tr>`;
+        }
+      } catch (err) {
+        console.error('Failed to load feed:', err);
+      }
+    }
+
+    async function deleteContent(id) {
+      if (!authToken) {
+        openLoginModal();
+        return;
+      }
+      if (!confirm(`Delete content item ${id}?`)) return;
+
+      try {
+        const res = await fetch(`${API_BASE}/admin/content/${id}`, {
+          method: 'DELETE',
+          headers: { 'Authorization': `Bearer ${authToken}` }
+        });
+        if (res.ok) {
+          showAlert(`✓ Item ${id} deleted successfully`, 'success');
+          loadFeed();
+        } else {
+          const data = await res.json();
+          showAlert(`Delete Failed: ${data.error || 'Unauthorized'}`, 'error');
+        }
+      } catch (err) {
+        showAlert(`Error deleting item: ${err.message}`, 'error');
+      }
+    }
+
+    function showAlert(msg, type) {
+      const box = document.getElementById('alertBox');
+      box.className = `alert alert-${type}`;
+      box.innerHTML = msg;
+      box.style.display = 'block';
+      setTimeout(() => { box.style.display = 'none'; }, 8000);
+    }
+  </script>
 </body>
 </html>
