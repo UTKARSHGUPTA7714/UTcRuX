@@ -166,24 +166,15 @@ fun CruxWidgetContent(
         Column(
             modifier = GlanceModifier.fillMaxSize()
         ) {
-            // Top Bar: CRUX · UTCRUX Branding & Type Indicator
+            // Top Bar: Clean UTcRuX Branding Header
             Row(
                 modifier = GlanceModifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "CRUX · UTCRUX",
+                    text = "UTcRuX",
                     style = TextStyle(
                         color = color(0xFFD00000L),
-                        fontSize = 10.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                )
-                Spacer(modifier = GlanceModifier.defaultWeight())
-                Text(
-                    text = content.type.uppercase(),
-                    style = TextStyle(
-                        color = color(0xFFAAAAAAL),
                         fontSize = 10.sp,
                         fontWeight = FontWeight.Bold
                     )
