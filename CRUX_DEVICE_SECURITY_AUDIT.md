@@ -185,10 +185,12 @@ Binary analysis of `releases/CRUX-MVP.apk` (`17,036,591` bytes / `16.25 MB`):
 
 | Device / Configuration | Status | Testing Method |
 | :--- | :---: | :--- |
-| **Nothing Phone (2a)** | **PASS** | Physical Device (Android 16 / Nothing OS) |
-| **Google Pixel** | **PASS (DESIGNED)** | Android SDK 34 API Standards |
-| **Samsung Galaxy (One UI)** | **PASS (DESIGNED)** | Standard Jetpack Glance AppWidget API |
-| **OnePlus / Xiaomi / Motorola** | **PASS (DESIGNED)** | Standard Jetpack Glance AppWidget API |
+| **Nothing Phone (2a)** | **PASS** | Physical Device Verified (Android 16 / Nothing OS) |
+| **Google Pixel** | **NOT PHYSICALLY TESTED** | Designed for Broad Compatibility (Android SDK 34 Standards) |
+| **Samsung Galaxy (One UI)** | **NOT PHYSICALLY TESTED** | Designed for Broad Compatibility (Jetpack Glance AppWidget API) |
+| **OnePlus (OxygenOS)** | **NOT PHYSICALLY TESTED** | Designed for Broad Compatibility (Jetpack Glance AppWidget API) |
+| **Xiaomi / POCO (HyperOS)** | **NOT PHYSICALLY TESTED** | Designed for Broad Compatibility (Jetpack Glance AppWidget API) |
+| **Motorola (Hello UI)** | **NOT PHYSICALLY TESTED** | Designed for Broad Compatibility (Jetpack Glance AppWidget API) |
 | **Small Widget (2×2)** | **PASS** | Verified on Physical Device |
 | **Medium Widget (4×2)** | **PASS** | Verified on Physical Device |
 | **Large Widget (4×4)** | **PASS** | Verified on Physical Device |
