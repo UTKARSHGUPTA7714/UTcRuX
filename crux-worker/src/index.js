@@ -1,7 +1,4 @@
-/**
- * CRUX by UTCRUX — Cloudflare Worker Public API (Production Security Hardened)
- * Cost: $0 / ₹0 (Cloudflare Workers Free Tier)
- */
+import { ADMIN_HTML } from './adminHtml.js';
 
 const SECURITY_HEADERS = {
   'Access-Control-Allow-Origin': '*',
@@ -65,7 +62,17 @@ export default {
     }
 
     try {
-      // 2. Public Read-Only Endpoint — GET /health
+      // 2. Mobile Admin Publisher UI — GET /admin & GET /admin/
+      if ((path === '/admin' || path === '/admin/') && method === 'GET') {
+        return new Response(ADMIN_HTML, {
+          headers: {
+            'Content-Type': 'text/html; charset=utf-8',
+            'Cache-Control': 'no-cache'
+          }
+        });
+      }
+
+      // 3. Public Read-Only Endpoint — GET /health
       if (path === '/health' && method === 'GET') {
         return jsonResponse({
           status: 'OK',
