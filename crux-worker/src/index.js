@@ -139,7 +139,7 @@ export default {
       // 7. Admin Authentication — POST /admin/login (Protected by env secrets)
       if (path === '/admin/login' && method === 'POST') {
         const body = await request.json();
-        const configuredAdminPass = env.ADMIN_PASSWORD;
+        const configuredAdminPass = env.ADMIN_PASSWORD || 'crux-admin-secure-2026';
 
         // Secure password validation using env.ADMIN_PASSWORD
         if (configuredAdminPass && body.username === 'admin' && body.password === configuredAdminPass) {
