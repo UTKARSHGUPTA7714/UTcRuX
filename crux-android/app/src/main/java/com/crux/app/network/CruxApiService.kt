@@ -28,10 +28,13 @@ interface CruxApiService {
     ): Response<List<CruxContent>>
 
     companion object {
-        // Default LAN IP for physical device on Wi-Fi (192.168.1.7:3000)
-        private const val BASE_URL = "http://192.168.1.7:3000/"
+        // Development LAN IP default for local server testing
+        const val DEV_BASE_URL = "http://192.168.1.7:3000/"
+        
+        // Production Cloudflare Worker HTTPS URL for public internet distribution
+        const val PROD_BASE_URL = "https://crux-api.utcrux.workers.dev/"
 
-        fun create(baseUrl: String = BASE_URL): CruxApiService {
+        fun create(baseUrl: String = DEV_BASE_URL): CruxApiService {
             return Retrofit.Builder()
                 .baseUrl(baseUrl)
                 .addConverterFactory(GsonConverterFactory.create())

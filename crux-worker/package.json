@@ -1,0 +1,13 @@
+{
+  "name": "crux-worker",
+  "version": "1.0.0",
+  "description": "CRUX by UTCRUX Public Cloudflare Worker API",
+  "main": "src/index.js",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy"
+  },
+  "devDependencies": {
+    "wrangler": "^3.28.0"
+  }
+}
