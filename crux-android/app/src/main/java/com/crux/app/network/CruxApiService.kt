@@ -34,7 +34,7 @@ interface CruxApiService {
         // Production Cloudflare Worker HTTPS URL for public internet distribution
         const val PROD_BASE_URL = "https://crux-api.utcrux.workers.dev/"
 
-        fun create(baseUrl: String = DEV_BASE_URL): CruxApiService {
+        fun create(baseUrl: String = PROD_BASE_URL): CruxApiService {
             return Retrofit.Builder()
                 .baseUrl(baseUrl)
                 .addConverterFactory(GsonConverterFactory.create())

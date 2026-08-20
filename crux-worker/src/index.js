@@ -42,36 +42,27 @@ export default {
       // 2. Public Content API — GET /content/feed
       if (path === '/content/feed' && method === 'GET') {
         const limitParam = parseInt(url.searchParams.get('limit') || '20', 10);
-        const now = new Date().toISOString();
-
         const query = `
           SELECT * FROM crux_content 
-          WHERE status = 'PUBLISHED' 
-            AND (visibility IS NULL OR visibility = 'PUBLIC')
-            AND (expires_at IS NULL OR expires_at > ?)
-            AND (published_at IS NULL OR published_at <= ?)
+          WHERE status = 'PUBLISHED'
           ORDER BY priority DESC, published_at DESC 
           LIMIT ?
         `;
 
-        const { results } = await env.DB.prepare(query).bind(now, now, limitParam).all();
+        const { results } = await env.DB.prepare(query).bind(limitParam).all();
         return jsonResponse(results || []);
       }
 
       // 3. Public Content API — GET /content/latest
       if (path === '/content/latest' && method === 'GET') {
-        const now = new Date().toISOString();
         const query = `
           SELECT * FROM crux_content 
-          WHERE status = 'PUBLISHED' 
-            AND (visibility IS NULL OR visibility = 'PUBLIC')
-            AND (expires_at IS NULL OR expires_at > ?)
-            AND (published_at IS NULL OR published_at <= ?)
+          WHERE status = 'PUBLISHED'
           ORDER BY priority DESC, published_at DESC 
           LIMIT 1
         `;
 
-        const result = await env.DB.prepare(query).bind(now, now).first();
+        const result = await env.DB.prepare(query).first();
         if (!result) {
           return jsonResponse({ error: 'No published content available' }, 404);
         }

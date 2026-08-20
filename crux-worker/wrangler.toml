@@ -8,4 +8,4 @@ ENVIRONMENT = "production"
 [[d1_databases]]
 binding = "DB"
 database_name = "crux-db"
-database_id = "PASTE_YOUR_D1_DATABASE_ID_HERE"
+database_id = "7dd10925-be2f-4e64-bc4d-ba30a7af09f3"
