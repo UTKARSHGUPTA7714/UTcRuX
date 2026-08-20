@@ -1,5 +1,23 @@
 [
   {
+    "id": "crux_1787259129575",
+    "type": "CRUX",
+    "title": "MIDNIGHT CROSSING TEST",
+    "body": "Testing UTC midnight crossing conversion to local time.",
+    "short_text": "Midnight crossing test.",
+    "author": "CRUX Admin",
+    "category": "GENERAL",
+    "image_url": "",
+    "visibility": "PUBLIC",
+    "status": "PUBLISHED",
+    "priority": 99,
+    "published_at": "2026-08-20T20:00:00Z",
+    "scheduled_at": "2026-08-20T20:52:09.576Z",
+    "created_at": "2026-08-20T20:52:09.576Z",
+    "updated_at": "2026-08-20T20:52:09.576Z",
+    "expires_at": ""
+  },
+  {
     "id": "crux_1787258939518",
     "type": "CRUX",
     "title": "CRUX FCM REAL TEST #002",
