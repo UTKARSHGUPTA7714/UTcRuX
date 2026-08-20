@@ -81,7 +81,7 @@ fun OnboardingScreen(
             )
             OnboardingStepCard(
                 step = "02",
-                title = "NOTHING OS DESIGN",
+                title = "MINIMALIST DESIGN",
                 description = "Monochrome, dot-matrix inspired UI designed for minimal distraction and modern aesthetics."
             )
             OnboardingStepCard(
